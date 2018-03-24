@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js"
+            integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+            crossorigin="anonymous">
+    </script>
+    <style>
+        li{
+            list-style-type: none;
+            float: left;
+            margin: 10px;
+        }
+        .pic img{
+            width: 200px;
+        }
+        .pics{
+            width: 440px;
+            border: 1px solid;
+            padding: 0px;
+        }
+        .clearfix:after{
+            content: '';
+            display: block;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+<div class="box">
+    <ul class="pics clearfix">
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/1.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/5.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/6.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/7.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/8.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/9.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/10.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/11.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/12.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/13.jpg" alt=""></a></li>
+        <li class="pic"><a href="#"><img src="http://5b0988e595225.cdn.sohucs.com/images/20170911/be5834cb247f46638579970e0a9d30de.jpeg" data-src="http://cdn.jirengu.com/book.jirengu.com/img/14.jpg" alt=""></a></li>
+    </ul>
+</div>
+<script>
+
+    function Exposure($target,callback) {
+        this.$target = $target
+        this.callback = callback
+        this.bind()
+        this.isShow()
+    }
+
+    Exposure.prototype.bind = function () {
+        var clock
+        var _this = this
+        $(window).on('scroll',function () {
+            if(clock){
+                clearTimeout(clock)
+            }
+            clock = setTimeout(function () {
+
+                _this.isShow()},300)
+        })
+
+    }
+
+    Exposure.prototype.check = function () {
+        var scrollTop = $(window).scrollTop()
+        var windowHeight = $(window).height()
+        var offsetTop = this.$target.offset().top
+        if (offsetTop<scrollTop+windowHeight && offsetTop>scrollTop){
+            return true
+        }
+        return false
+    }
+
+    Exposure.prototype.isShow = function(){
+        if(this.check(this.$target)){
+            this.callback(this.$target);
+        }
+    }
+
+    var Lazy = (function(){
+
+        return {
+            init: function($targets, callback){
+                $targets.each(function(idx, target){
+                    new Exposure($(target), callback);
+                })
+
+            },
+        }
+    })();
+
+    function loading($img) {
+        $img.attr('src',$img.attr('data-src'))
+    }
+
+    Lazy.init($('.pic img'), function($node){
+        loading($node);
+    });
+
+</script>
+</body>
+</html>

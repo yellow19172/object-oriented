@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://code.jquery.com/jquery-2.2.4.js"
+            integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="
+            crossorigin="anonymous">
+    </script>
+    <style>
+        ul,li{
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        a{
+            text-decoration: none;
+        }
+        .carousel{
+            position: relative;
+            width: 350px;
+            height: 250px;
+            overflow: hidden;
+
+        }
+        .ct-img{
+            position: absolute;
+        }
+        .clearfix:after{
+            content: '';
+            display: block;
+            clear: both;
+        }
+        .ct-img>li img{
+            width: 350px;
+            height: 250px;
+            float: left;
+        }
+        .carousel .arrow{
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+            position: absolute;
+            top: 50%;
+            margin-top: -15px;
+            z-index: 1;
+            text-align: center;
+            line-height: 30px;
+            color:#fff
+        }
+        .carousel .arrow:hover{
+            opacity: 0.7;
+        }
+        .carousel .pre{
+            left:10px;
+        }
+        .carousel .next{
+            right:10px;
+        }
+        .carousel .bullet{
+            position: absolute;
+            bottom: 10px;
+            width: 100%;
+            z-index: 1;
+            text-align: center;
+            font-size: 0;
+        }
+        .carousel .bullet>li{
+            display: inline-block;
+            width: 50px;
+            height: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 3px;
+        }
+        .active{
+            background-color: #ccc;
+        }
+    </style>
+</head>
+<body>
+<div class="carousel">
+    <ul class="ct-img clearfix">
+        <li data-id="0"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/1.jpg" alt=""></a></li>
+        <li data-id="1"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg" alt=""></a></li>
+        <li data-id="2"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg" alt=""></a></li>
+        <li data-id="3"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg" alt=""></a></li>
+    </ul>
+    <a href="#" class="pre arrow"><</a>
+    <a href="#" class="next arrow">></a>
+    <ul class="bullet">
+        <li class="active"></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+
+<div class="carousel">
+    <ul class="ct-img clearfix">
+        <li data-id="0"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/1.jpg" alt=""></a></li>
+        <li data-id="1"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/2.jpg" alt=""></a></li>
+        <li data-id="2"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/3.jpg" alt=""></a></li>
+        <li data-id="3"><a href="#"><img src="http://cdn.jirengu.com/book.jirengu.com/img/4.jpg" alt=""></a></li>
+    </ul>
+    <a href="#" class="pre arrow"><</a>
+    <a href="#" class="next arrow">></a>
+    <ul class="bullet">
+        <li class="active"></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+</div>
+
+
+<script>
+    
+    function Carousel($ct) {
+        this.$ct = $ct;
+        this.init();
+        this.bind();
+        this.auto()
+    }
+
+    Carousel.prototype.init = function () {
+        var $imgCt = this.$imgCt = this.$ct.find('.ct-img'),
+            $imgs = this.$imgs = this.$ct.find('.ct-img>li'),
+            $preBtn = this.$preBtn = this.$ct.find('.pre'),
+            $nextBtn = this.$nextBtn = this.$ct.find('.next'),
+            $bullets = this.$bullets = this.$ct.find('.bullet li')
+
+        this.clock
+        this.pageIndex = 0
+        this.isAnimate = false
+        this.imgCount =$imgCt.children().length
+        this.imgWidth=$imgCt.children().width()
+
+        $imgCt.append($imgs.first().clone())
+        $imgCt.prepend($imgs.last().clone())
+        $imgCt.width((this.imgCount+2)*this.imgWidth)
+        $imgCt.css({left:-this.imgWidth})
+
+    }
+
+    Carousel.prototype.bind = function () {
+        var _this = this
+        this.$preBtn.on('click',function () {
+            _this.playPre(1)
+            _this.stop()
+        })
+
+        this.$nextBtn.on('click',function () {
+            _this.playNext(1)
+            _this.stop()
+        })
+
+        this.$bullets.on('click',function () {
+            var index = $(this).index()
+            if(index>_this.pageIndex){
+                _this.playNext(index-_this.pageIndex)
+            }else  if(index<_this.pageIndex){
+                _this.playPre(_this.pageIndex-index)
+            }
+        })
+    }
+
+    Carousel.prototype.playPre = function (len) {
+        var _this = this
+        if(this.isAnimate) return
+        this.isAnimate = true
+        this.$imgCt.animate({left:'+='+len*this.imgWidth},function () {
+            _this.pageIndex-=len
+            if(_this.pageIndex < 0){
+                _this.pageIndex = _this.imgCount-1
+                _this.$imgCt.css({left:-_this.imgCount*_this.imgWidth})
+            }
+            _this.setBullet()
+            _this.isAnimate = false
+
+        })
+    }
+
+    Carousel.prototype.playNext = function (len) {
+        var _this = this
+        if(this.isAnimate) return
+        this.isAnimate = true
+        this.$imgCt.animate({left:'-='+len*this.imgWidth},function () {
+            _this.pageIndex+=len
+            if(_this.pageIndex === _this.imgCount){
+                _this.pageIndex = 0
+                _this.$imgCt.css({left:-_this.imgWidth})
+            }
+            _this.setBullet()
+            _this.isAnimate = false
+        })
+    }
+
+    Carousel.prototype.setBullet = function () {
+        this.$bullets.removeClass('active')
+            .eq(this.pageIndex)
+            .addClass('active')
+    }
+
+    Carousel.prototype.stop = function () {
+        _this = this
+        clearInterval(_this.clock)
+    }
+
+    Carousel.prototype.auto = function () {
+       var _this =this
+        this.clock = setInterval(function (){_this.playNext(1)},2000)
+    }
+
+    var carousel1 = new Carousel($('.carousel').eq(0))
+    var carousel2 = new Carousel($('.carousel').eq(1))
+
+</script>
+</body>
+</html>
